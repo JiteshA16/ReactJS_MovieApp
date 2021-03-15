@@ -23,6 +23,10 @@ const styles = theme => ({
         flexWrap: 'nowrap',
         transform: 'translateZ(0)',
         width: '100%'
+    },
+    gridListMain: {
+        transform: 'translateZ(0)',
+        cursor: 'pointer'
     }
 });
 
@@ -37,13 +41,30 @@ class Home extends Component {
                     <span>Upcoming movies</span>
                 </div>
                 <GridList cols={5} className={classes.gridListUpcomingMovies}>
-                    {moviesData.map( movie => (
+                    {moviesData.map(movie => (
                         <GridListTile key={movie.id}>
                             <img className="movie-poster" src={movie.poster_url} alt={movie.title} />
                             <GridListTileBar title={movie.title} />
                         </GridListTile>
                     ))}
                 </GridList>
+
+                <div className="flex-container">
+                    <div className="left">
+                        <GridList cols={4} cellHeight={350} className={classes.gridListMain}>
+                            {moviesData.map(movie => (
+                                <GridListTile className="released-movie-grid-item" key={"grid" + movie.id}>
+                                    <img className="movie-poster" src={movie.poster_url} alt={movie.title} />
+                                    <GridListTileBar
+                                        title={movie.title}
+                                        subtitle={<span>Release Date : {new Date(movie.release_date).toDateString()}</span> }
+                                    />
+                                </GridListTile>
+                            ))}
+                        </GridList>
+                    </div>
+                </div>
+
             </div>
         );
     }
