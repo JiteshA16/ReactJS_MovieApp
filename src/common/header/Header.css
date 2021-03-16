@@ -8,6 +8,11 @@
     float: right;
 }
 
+.bookshow-button {
+    float: right;
+    margin-right: 10px;
+}
+
 .app-logo {
     height: 35px;
     background: #ff7f7f;

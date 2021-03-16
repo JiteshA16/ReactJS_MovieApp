@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import './Header.css';
 import Button from '@material-ui/core/Button';
 import logo from '../../assets/logo.svg';
@@ -131,6 +132,10 @@ class Header extends Component {
         this.setState({ contact: e.target.value });
     }
 
+    bookShowHandler = () => {
+
+    }
+
     render() {
         return (
             <header className="app-header">
@@ -138,6 +143,12 @@ class Header extends Component {
                 <div className="login-button">
                     <Button variant="contained" color="default" onClick={this.openModalHandler}>LOGIN</Button>
                 </div>
+
+                {this.props.showBookShowButton == "true" 
+                ? <div className="bookshow-button">
+                    <Button variant="contained" color="primary" onClick={this.bookShowHandler}>BOOK SHOW</Button>
+                </div> 
+                : ""}
 
                 <Modal ariaHideApp={false} isOpen={this.state.modalIsOpen} contentLabel="Login" onRequestClose={this.closeModalHandler} style={customStyles}>
                     <Tabs className="tabs" value={this.state.value} onChange={this.tabChangeHandler}>

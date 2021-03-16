@@ -79,7 +79,7 @@ class Details extends Component {
             }
             starIconList.push(star);
         }
-        
+
         this.setState({starIcons: starIconList});
     }
 
@@ -101,7 +101,7 @@ class Details extends Component {
 
         return (
             <div className="details">
-                <Header />
+                <Header showBookShowButton="true"/>
                 <div className="back">
                     <Typography onClick={this.backToHomeHandler}>
                         &#60; Back to Home
