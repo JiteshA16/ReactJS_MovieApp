@@ -10,9 +10,11 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Input from '@material-ui/core/Input';
 import Select from '@material-ui/core/Select';
 import Button from '@material-ui/core/Button'
+import FormHelperText from '@material-ui/core/FormHelperText';
 
 import Home from '../home/Home';
 import './BookShow.css';
+import Confirmation from '../confirmation/Confirmation';
 
 import locations from '../../common/location';
 import languages from '../../common/language';
@@ -31,7 +33,12 @@ class BookShow extends Component {
             showTime: "",
             tickets: 0,
             unitPrice: 500,
-            availableTickets: 20
+            availableTickets: 20,
+            locationRequired: "dispNone",
+            languageRequired: "dispNone",
+            showDateRequired: "dispNone",
+            showTimeRequired: "dispNone",
+            ticketsRequired: "dispNone"
         }
     }
 
@@ -61,10 +68,15 @@ class BookShow extends Component {
     }
 
     ticketsChangeHandler = (e) => {
-        this.setState({ tickets: e.target.value });
+        this.setState({ tickets: e.target.value === "" ? 0 : e.target.value });
     }
 
     bookShowButtonHandler = () => {
+        this.state.location === "" ? this.setState({ locationRequired: "dispBlock" }) : this.setState({ locationRequired: "dispNone" })
+        this.state.language === "" ? this.setState({ languageRequired: "dispBlock" }) : this.setState({ languageRequired: "dispNone" })
+        this.state.showDate === "" ? this.setState({ showDateRequired: "dispBlock" }) : this.setState({ showDateRequired: "dispNone" })
+        this.state.showTime === "" ? this.setState({ showTimeRequired: "dispBlock" }) : this.setState({ showTimeRequired: "dispNone" })
+        this.state.tickets === 0 ? this.setState({ ticketsRequired: "dispBlock" }) : this.setState({ ticketsRequired: "dispNone" })
     }
 
     render() {
@@ -80,7 +92,7 @@ class BookShow extends Component {
                         <CardContent>
 
                             <Typography style={{ textAlign: 'center' }} variant="h5" component="h2">BOOK SHOW</Typography>
-                            <br/>
+                            <br />
 
                             <FormControl required className="formControl">
                                 <InputLabel htmlFor="location">Choose Location:</InputLabel>
@@ -93,9 +105,10 @@ class BookShow extends Component {
                                         </MenuItem>
                                     ))}
                                 </Select>
+                                <FormHelperText className={this.state.locationRequired}><span className="red">Please select location</span></FormHelperText>
                             </FormControl>
 
-                            <br/><br/>
+                            <br /><br />
 
                             <FormControl required className="formControl">
                                 <InputLabel htmlFor="language">Choose Language:</InputLabel>
@@ -108,6 +121,7 @@ class BookShow extends Component {
                                         </MenuItem>
                                     ))}
                                 </Select>
+                                <FormHelperText className={this.state.languageRequired}><span className="red">Please select language</span></FormHelperText>
                             </FormControl>
 
                             <br /><br />
@@ -123,9 +137,10 @@ class BookShow extends Component {
                                         </MenuItem>
                                     ))}
                                 </Select>
+                                <FormHelperText className={this.state.showDateRequired}><span className="red">Please select show date</span></FormHelperText>
                             </FormControl>
 
-                            <br/><br/>
+                            <br /><br />
 
                             <FormControl required className="formControl">
                                 <InputLabel htmlFor="showTime">Choose Show Time:</InputLabel>
@@ -138,28 +153,30 @@ class BookShow extends Component {
                                         </MenuItem>
                                     ))}
                                 </Select>
+                                <FormHelperText className={this.state.showTimeRequired}><span className="red">Please select show time</span></FormHelperText>
                             </FormControl>
 
-                            <br/><br/>
+                            <br /><br />
 
                             <FormControl required className="formControl">
                                 <InputLabel htmlFor="tickets">Tickets: ({this.state.availableTickets + " " + "available"})</InputLabel>
                                 <Input id="tickets" type="text" value={this.state.tickets !== 0 ? this.state.tickets : ""} onChange={this.ticketsChangeHandler} />
+                                <FormHelperText className={this.state.ticketsRequired}><span className="red">Please select tickets</span></FormHelperText>
                             </FormControl>
 
-                            <br/><br/>
+                            <br /><br />
 
                             <Typography>
                                 Unit Price: Rs. {this.state.unitPrice}
                             </Typography>
 
-                            <br/>
+                            <br />
 
                             <Typography>
                                 Total Price: Rs. {this.state.unitPrice * this.state.tickets}
                             </Typography>
 
-                            <br/><br/>
+                            <br /><br />
 
                             <Button variant="contained" color="primary" onClick={this.bookShowButtonHandler}>
                                 BOOK SHOW
