@@ -77,6 +77,16 @@ class BookShow extends Component {
         this.state.showDate === "" ? this.setState({ showDateRequired: "dispBlock" }) : this.setState({ showDateRequired: "dispNone" })
         this.state.showTime === "" ? this.setState({ showTimeRequired: "dispBlock" }) : this.setState({ showTimeRequired: "dispNone" })
         this.state.tickets === 0 ? this.setState({ ticketsRequired: "dispBlock" }) : this.setState({ ticketsRequired: "dispNone" })
+        
+        if (this.state.location !== "" && this.state.language !== "" && this.state.showDate !== "" && this.state.showTime !== "" && this.state.tickets !== 0 ) {
+            ReactDOM.render(
+                <React.StrictMode>
+                    <Confirmation bookingSummary={this.state}/>
+                </React.StrictMode>,
+                document.getElementById('root')
+            );
+        }
+
     }
 
     render() {
@@ -88,12 +98,15 @@ class BookShow extends Component {
                         &#60; Back to Movie Details
                     </Typography>
 
+                    <br/>
+
                     <Card className="cardStyle">
                         <CardContent>
 
                             <Typography style={{ textAlign: 'center' }} variant="h5" component="h2">BOOK SHOW</Typography>
                             <br />
 
+                            
                             <FormControl required className="formControl">
                                 <InputLabel htmlFor="location">Choose Location:</InputLabel>
                                 <Select

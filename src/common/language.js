@@ -1,4 +1,4 @@
-let languagelanguage = [
+let language = [
     {
         id: 1,
         language: "Hindi"
