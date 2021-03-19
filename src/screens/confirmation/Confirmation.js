@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import './Confirmation.css';
 import Header from '../../common/header/Header'
-import BookShow from '../bookshow/BookShow';
-import Home from '../home/Home';
 import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -16,6 +13,7 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import coupons from '../../common/coupons';
+import { Link } from 'react-router-dom';
 
 
 class Confirmation extends Component {
@@ -33,17 +31,8 @@ class Confirmation extends Component {
 
     componentDidMount() {
         let currentState = this.state;
-        currentState.totalPrice = currentState.originalTotalPrice = this.props.bookingSummary.unitPrice * this.props.bookingSummary.tickets;
+        currentState.totalPrice = currentState.originalTotalPrice = this.props.location.bookingSummary.unitPrice * this.props.location.bookingSummary.tickets;
         this.setState({ currentState });
-    }
-
-    backToBookShowHandler = () => {
-        ReactDOM.render(
-            <React.StrictMode>
-                <BookShow bookingSummary={this.props.bookingSummary} />
-            </React.StrictMode>,
-            document.getElementById('root')
-        );
     }
 
     confirmBookingHandler = () => {
@@ -52,12 +41,7 @@ class Confirmation extends Component {
 
     snackBarCloseHandler = () => {
         this.setState({ snackBarOpen: false });
-        ReactDOM.render(
-            <React.StrictMode>
-                <Home />
-            </React.StrictMode>,
-            document.getElementById('root')
-        );
+        this.props.history.push('/');
     }
 
     couponCodeChangeHandler = (e) => {
@@ -86,8 +70,10 @@ class Confirmation extends Component {
                 <Header />
 
                 <div className="confirmation marginTop16">
-                    <Typography className="back" onClick={this.backToBookShowHandler}>
-                        &#60; Back to Book Show
+                    <Typography className="back">
+                        <Link to={"/bookshow/" + this.props.match.params.id}>
+                            &#60; Back to Book Show
+                        </Link>
                     </Typography>
 
                     <br />
@@ -105,7 +91,7 @@ class Confirmation extends Component {
                                     <Typography>Location:</Typography>
                                 </div>
                                 <div>
-                                    <Typography>{this.props.bookingSummary.location}</Typography>
+                                    <Typography>{this.props.location.bookingSummary.location}</Typography>
                                 </div>
                             </div>
 
@@ -116,7 +102,7 @@ class Confirmation extends Component {
                                     <Typography>Language:</Typography>
                                 </div>
                                 <div>
-                                    <Typography>{this.props.bookingSummary.language}</Typography>
+                                    <Typography>{this.props.location.bookingSummary.language}</Typography>
                                 </div>
                             </div>
 
@@ -127,7 +113,7 @@ class Confirmation extends Component {
                                     <Typography>Show Date:</Typography>
                                 </div>
                                 <div>
-                                    <Typography>{this.props.bookingSummary.showDate}</Typography>
+                                    <Typography>{this.props.location.bookingSummary.showDate}</Typography>
                                 </div>
                             </div>
 
@@ -138,7 +124,7 @@ class Confirmation extends Component {
                                     <Typography>Show Time:</Typography>
                                 </div>
                                 <div>
-                                    <Typography>{this.props.bookingSummary.showTime}</Typography>
+                                    <Typography>{this.props.location.bookingSummary.showTime}</Typography>
                                 </div>
                             </div>
 
@@ -149,7 +135,7 @@ class Confirmation extends Component {
                                     <Typography>Tickets:</Typography>
                                 </div>
                                 <div>
-                                    <Typography>{this.props.bookingSummary.tickets}</Typography>
+                                    <Typography>{this.props.location.bookingSummary.tickets}</Typography>
                                 </div>
                             </div>
 
@@ -160,7 +146,7 @@ class Confirmation extends Component {
                                     <Typography>Unit Price:</Typography>
                                 </div>
                                 <div>
-                                    <Typography>Rs. {this.props.bookingSummary.unitPrice}</Typography>
+                                    <Typography>Rs. {this.props.location.bookingSummary.unitPrice}</Typography>
                                 </div>
                             </div>
 
@@ -185,7 +171,7 @@ class Confirmation extends Component {
                                     <Typography><span className="bold">Total Price:</span></Typography>
                                 </div>
                                 <div>
-                                    <Typography>Rs. {this.props.bookingSummary.unitPrice * this.props.bookingSummary.tickets}</Typography>
+                                    <Typography>Rs. {this.props.location.bookingSummary.unitPrice * this.props.location.bookingSummary.tickets}</Typography>
                                 </div>
                             </div>
 
@@ -207,7 +193,7 @@ class Confirmation extends Component {
                     onClose={this.snackBarCloseHandler}
                     message={
                         <span id="client-snackbar">
-                            <div className="confirm"><div><CheckCircleIcon style={{color: 'green'}} /></div><div className="message" style={{color: 'green'}}> Booking Confirmed!</div></div>
+                            <div className="confirm"><div><CheckCircleIcon style={{ color: 'green' }} /></div><div className="message" style={{ color: 'green' }}> Booking Confirmed!</div></div>
                         </span>
                     }
                     action={[

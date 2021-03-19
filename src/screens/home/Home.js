@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import './Home.css';
 import Header from '../../common/header/Header';
-import Details from '../../screens/details/Details';
 import { withStyles } from '@material-ui/core/styles';
 import moviesData from '../../common/moviesData';
 import genres from '../../common/genres';
@@ -82,12 +80,7 @@ class Home extends Component {
     }
 
     movieClickHandler = (movieId) => {
-        ReactDOM.render(
-            <React.StrictMode>
-              <Details movieId={movieId}/>
-            </React.StrictMode>,
-            document.getElementById('root')
-          );
+        this.props.history.push('/movie/' + movieId);
     }
 
     render() {
@@ -111,7 +104,7 @@ class Home extends Component {
                     <div className="left">
                         <GridList cols={4} cellHeight={350} className={classes.gridListMain}>
                             {moviesData.map(movie => (
-                                <GridListTile onClick={this.movieClickHandler.bind(this,movie.id)} className="released-movie-grid-item" key={"grid" + movie.id}>
+                                <GridListTile onClick={this.movieClickHandler.bind(this, movie.id)} className="released-movie-grid-item" key={"grid" + movie.id}>
                                     <img className="movie-poster" src={movie.poster_url} alt={movie.title} />
                                     <GridListTileBar
                                         title={movie.title}

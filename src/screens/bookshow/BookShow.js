@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import Header from '../../common/header/Header';
 import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
@@ -12,15 +11,14 @@ import Select from '@material-ui/core/Select';
 import Button from '@material-ui/core/Button'
 import FormHelperText from '@material-ui/core/FormHelperText';
 
-import Home from '../home/Home';
 import './BookShow.css';
-import Confirmation from '../confirmation/Confirmation';
 
 import locations from '../../common/location';
 import languages from '../../common/language';
 import showDates from '../../common/showDate';
 import showTimes from '../../common/showTime';
 
+import { Link } from 'react-router-dom';
 
 class BookShow extends Component {
 
@@ -40,15 +38,6 @@ class BookShow extends Component {
             showTimeRequired: "dispNone",
             ticketsRequired: "dispNone"
         }
-    }
-
-    backToDetailsHandler = () => {
-        ReactDOM.render(
-            <React.StrictMode>
-                <Home />
-            </React.StrictMode>,
-            document.getElementById('root')
-        );
     }
 
     locationChangeHandler = (e) => {
@@ -77,14 +66,12 @@ class BookShow extends Component {
         this.state.showDate === "" ? this.setState({ showDateRequired: "dispBlock" }) : this.setState({ showDateRequired: "dispNone" })
         this.state.showTime === "" ? this.setState({ showTimeRequired: "dispBlock" }) : this.setState({ showTimeRequired: "dispNone" })
         this.state.tickets === 0 ? this.setState({ ticketsRequired: "dispBlock" }) : this.setState({ ticketsRequired: "dispNone" })
-        
-        if (this.state.location !== "" && this.state.language !== "" && this.state.showDate !== "" && this.state.showTime !== "" && this.state.tickets !== 0 ) {
-            ReactDOM.render(
-                <React.StrictMode>
-                    <Confirmation bookingSummary={this.state}/>
-                </React.StrictMode>,
-                document.getElementById('root')
-            );
+
+        if (this.state.location !== "" && this.state.language !== "" && this.state.showDate !== "" && this.state.showTime !== "" && this.state.tickets !== 0) {
+            this.props.history.push({
+                pathname: '/confirm/' + this.props.match.params.id,
+                bookingSummary: this.state
+            });
         }
 
     }
@@ -94,11 +81,13 @@ class BookShow extends Component {
             <div>
                 <Header />
                 <div className="bookShow">
-                    <Typography className="back" onClick={this.backToDetailsHandler}>
-                        &#60; Back to Movie Details
+                    <Typography className="back">
+                        <Link to={"/movie/" + this.props.match.params.id}>
+                            &#60; Back to Movie Details
+                        </Link>
                     </Typography>
 
-                    <br/>
+                    <br />
 
                     <Card className="cardStyle">
                         <CardContent>
@@ -106,7 +95,7 @@ class BookShow extends Component {
                             <Typography style={{ textAlign: 'center' }} variant="h5" component="h2">BOOK SHOW</Typography>
                             <br />
 
-                            
+
                             <FormControl required className="formControl">
                                 <InputLabel htmlFor="location">Choose Location:</InputLabel>
                                 <Select
