@@ -96,7 +96,7 @@ class Header extends Component {
     loginClickHandler = () => {
         this.state.username === "" ? this.setState({ usernameRequired: "dispBlock" }) : this.setState({ usernameRequired: "dispNone" })
         this.state.loginPassword === "" ? this.setState({ loginPasswordRequired: "dispBlock" }) : this.setState({ loginPasswordRequired: "dispNone" })
-    
+
         if (this.state.username === "" || this.state.loginPassword === "") {
             return;
         }
@@ -185,13 +185,42 @@ class Header extends Component {
         this.setState({ contact: e.target.value });
     }
 
+    logoutHandler = () => { 
+        let that = this;
+        let logoutData = null;
+
+        let xhrLogout = new XMLHttpRequest();
+        xhrLogout.addEventListener("readystatechange", function () {
+            if (this.readyState === 4) {
+                console.log(this.responseText);
+                sessionStorage.removeItem("uuid");
+                sessionStorage.removeItem("access-token");
+                that.setState({loggedIn: false});
+            }
+        })
+
+        let authorization = "Bearer " + sessionStorage.getItem("access-token");
+        xhrLogout.open("POST", this.props.baseUrl + "auth/logout");
+        xhrLogout.setRequestHeader("Authorization", authorization);
+        xhrLogout.setRequestHeader("Content-Type", "application/json");
+        xhrLogout.setRequestHeader("Cache-Control", "no-cache");
+        xhrLogout.send(logoutData);
+    }
+
     render() {
         return (
             <header className="app-header">
                 <img src={logo} alt="logo" className="app-logo" />
-                <div className="login-button">
-                    <Button variant="contained" color="default" onClick={this.openModalHandler}>LOGIN</Button>
-                </div>
+
+                {!this.state.loggedIn ?
+                    <div className="login-button">
+                        <Button variant="contained" color="default" onClick={this.openModalHandler}>LOGIN</Button>
+                    </div>
+                    :
+                    <div className="login-button">
+                        <Button variant="contained" color="default" onClick={this.logoutHandler}>LOGOUT</Button>
+                    </div>
+                }
 
                 {this.props.showBookShowButton === "true"
                     ? <div className="bookshow-button">
