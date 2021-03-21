@@ -111,6 +111,7 @@ class Header extends Component {
                 sessionStorage.setItem("uuid", JSON.parse(this.responseText).id);
                 sessionStorage.setItem("access-token", xhrLogin.getResponseHeader("access-token"));
                 that.setState({ loggedIn: true });
+                that.closeModalHandler();
             }
         })
         let authString = this.state.username + ":" + this.state.loginPassword;
