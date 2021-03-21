@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import './Home.css';
 import Header from '../../common/header/Header';
 import { withStyles } from '@material-ui/core/styles';
-import moviesData from '../../common/moviesData';
 import genres from '../../common/genres';
 import artists from '../../common/artists';
 import GridList from '@material-ui/core/GridList';
@@ -57,6 +56,8 @@ class Home extends Component {
         super();
         this.state = {
             movieName: "",
+            upcomingMovies: [{}],
+            releasedMovies: [{}],
             genres: [],
             artists: []
         }
@@ -83,17 +84,46 @@ class Home extends Component {
         this.props.history.push('/movie/' + movieId);
     }
 
+    componentWillMount() {
+        /* Get upcoming movies */
+        let upcomingData = null;
+        let xhrUpcoming = new XMLHttpRequest();
+        let that = this;
+        xhrUpcoming.addEventListener("readystatechange", function () {
+            if (this.readyState === 4) {
+                that.setState({ upcomingMovies: JSON.parse(this.responseText).movies });
+            }
+        })
+
+        xhrUpcoming.open("GET", this.props.baseUrl + "movies?status=PUBLISHED");
+        xhrUpcoming.setRequestHeader("Cache-Control", "no-cache");
+        xhrUpcoming.send(upcomingData);
+
+        /* Get released movies */
+        let releasedData = null;
+        let xhrReleased = new XMLHttpRequest();
+        xhrReleased.addEventListener("readystatechange", function () {
+            if (this.readyState === 4) {
+                that.setState({ releasedMovies: JSON.parse(this.responseText).movies });
+            }
+        })
+
+        xhrReleased.open("GET", this.props.baseUrl + "movies?status=RELEASED");
+        xhrReleased.setRequestHeader("Cache-Control", "no-cache");
+        xhrReleased.send(releasedData);
+    }
+
     render() {
         const { classes } = this.props;
         return (
             <div>
-                <Header />
+                <Header baseUrl={this.props.baseUrl} />
                 <div className={classes.upcomingMoviesHeading}>
                     <span>Upcoming movies</span>
                 </div>
                 <GridList cols={5} className={classes.gridListUpcomingMovies}>
-                    {moviesData.map(movie => (
-                        <GridListTile key={movie.id}>
+                    {this.state.upcomingMovies.map(movie => (
+                        <GridListTile key={"upcoming-" + movie.id}>
                             <img className="movie-poster" src={movie.poster_url} alt={movie.title} />
                             <GridListTileBar title={movie.title} />
                         </GridListTile>
@@ -103,8 +133,8 @@ class Home extends Component {
                 <div className="flex-container">
                     <div className="left">
                         <GridList cols={4} cellHeight={350} className={classes.gridListMain}>
-                            {moviesData.map(movie => (
-                                <GridListTile onClick={this.movieClickHandler.bind(this, movie.id)} className="released-movie-grid-item" key={"grid" + movie.id}>
+                            {this.state.releasedMovies.map(movie => (
+                                <GridListTile onClick={this.movieClickHandler.bind(this, movie.id)} className="released-movie-grid-item" key={"released-" + movie.id}>
                                     <img className="movie-poster" src={movie.poster_url} alt={movie.title} />
                                     <GridListTileBar
                                         title={movie.title}

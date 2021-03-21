@@ -11,7 +11,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
 import PropTypes from 'prop-types';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const customStyles = {
     content: {
@@ -56,7 +56,9 @@ class Header extends Component {
             registerPasswordRequired: "dispNone",
             registerPassword: "",
             contactRequired: "dispNone",
-            contact: ""
+            contact: "",
+            registrationSuccess: false,
+            loggedIn: sessionStorage.getItem("access-token") == null ? false : true
         }
     }
 
@@ -94,6 +96,30 @@ class Header extends Component {
     loginClickHandler = () => {
         this.state.username === "" ? this.setState({ usernameRequired: "dispBlock" }) : this.setState({ usernameRequired: "dispNone" })
         this.state.loginPassword === "" ? this.setState({ loginPasswordRequired: "dispBlock" }) : this.setState({ loginPasswordRequired: "dispNone" })
+    
+        if (this.state.username === "" || this.state.loginPassword === "") {
+            return;
+        }
+
+        let that = this;
+        let loginData = null;
+
+        let xhrLogin = new XMLHttpRequest();
+        xhrLogin.addEventListener("readystatechange", function () {
+            if (this.readyState === 4) {
+                console.log(this.responseText);
+                sessionStorage.setItem("uuid", JSON.parse(this.responseText).id);
+                sessionStorage.setItem("access-token", xhrLogin.getResponseHeader("access-token"));
+                that.setState({ loggedIn: true });
+            }
+        })
+        let authString = this.state.username + ":" + this.state.loginPassword;
+        let authorization = "Basic " + window.btoa(authString);
+        xhrLogin.open("POST", this.props.baseUrl + "auth/login");
+        xhrLogin.setRequestHeader("Authorization", authorization);
+        xhrLogin.setRequestHeader("Content-Type", "application/json");
+        xhrLogin.setRequestHeader("Cache-Control", "no-cache");
+        xhrLogin.send(loginData);
     }
 
     inputUsernameChangeHandler = (e) => {
@@ -110,6 +136,32 @@ class Header extends Component {
         this.state.email === "" ? this.setState({ emailRequired: "dispBlock" }) : this.setState({ emailRequired: "dispNone" })
         this.state.registerPassword === "" ? this.setState({ registerPasswordRequired: "dispBlock" }) : this.setState({ registerPasswordRequired: "dispNone" })
         this.state.contact === "" ? this.setState({ contactRequired: "dispBlock" }) : this.setState({ contactRequired: "dispNone" })
+
+        if (this.state.firstname === "" || this.state.lastname === "" || this.state.email === "" || this.state.registerPassword === "" || this.state.contact === "") {
+            return;
+        }
+
+        let that = this;
+        let registerParams = {
+            "email_address": this.state.email,
+            "first_name": this.state.firstname,
+            "last_name": this.state.lastname,
+            "mobile_number": this.state.contact,
+            "password": this.state.registerPassword
+        }
+        let registerData = JSON.stringify(registerParams);
+
+        let xhrSignUp = new XMLHttpRequest();
+        xhrSignUp.addEventListener("readystatechange", function () {
+            if (this.readyState === 4) {
+                console.log(this.responseText);
+                that.setState({ registrationSuccess: true });
+            }
+        })
+        xhrSignUp.open("POST", this.props.baseUrl + "signup");
+        xhrSignUp.setRequestHeader("Content-Type", "application/json");
+        xhrSignUp.setRequestHeader("Cache-Control", "no-cache");
+        xhrSignUp.send(registerData);
     }
 
     inputFirstNameChangeHandler = (e) => {
@@ -140,13 +192,13 @@ class Header extends Component {
                     <Button variant="contained" color="default" onClick={this.openModalHandler}>LOGIN</Button>
                 </div>
 
-                {this.props.showBookShowButton === "true" 
-                ? <div className="bookshow-button">
-                    <Link to={"/bookshow/" + this.props.id}>
-                    <Button variant="contained" color="primary">BOOK SHOW</Button>
-                    </Link>
-                </div> 
-                : ""}
+                {this.props.showBookShowButton === "true"
+                    ? <div className="bookshow-button">
+                        <Link to={"/bookshow/" + this.props.id}>
+                            <Button variant="contained" color="primary">BOOK SHOW</Button>
+                        </Link>
+                    </div>
+                    : ""}
 
                 <Modal ariaHideApp={false} isOpen={this.state.modalIsOpen} contentLabel="Login" onRequestClose={this.closeModalHandler} style={customStyles}>
                     <Tabs className="tabs" value={this.state.value} onChange={this.tabChangeHandler}>
@@ -164,7 +216,7 @@ class Header extends Component {
                             <br /><br />
                             <FormControl required>
                                 <InputLabel htmlFor="loginPassword">Password</InputLabel>
-                                <Input type="password" id="loginPassword" loginPassword={this.state.loginPassword} onChange={this.inputLoginPasswordChangeHandler} />
+                                <Input type="password" id="loginPassword" loginpassword={this.state.loginPassword} onChange={this.inputLoginPasswordChangeHandler} />
                                 <FormHelperText className={this.state.loginPasswordRequired}><span className="red">Please enter password</span></FormHelperText>
                             </FormControl>
                             <br /><br />
@@ -194,7 +246,7 @@ class Header extends Component {
                             <br /><br />
                             <FormControl required>
                                 <InputLabel htmlFor="registerPassword">Password</InputLabel>
-                                <Input type="password" id="registerPassword" registerPassword={this.state.registerPassword} onChange={this.inputRegisterPasswordChangeHandler} />
+                                <Input type="password" id="registerPassword" registerpassword={this.state.registerPassword} onChange={this.inputRegisterPasswordChangeHandler} />
                                 <FormHelperText className={this.state.registerPasswordRequired}><span className="red">Please enter password</span></FormHelperText>
                             </FormControl>
                             <br /><br />
@@ -203,6 +255,12 @@ class Header extends Component {
                                 <Input type="text" id="contact" contact={this.state.contact} onChange={this.inputContactNoChangeHandler} />
                                 <FormHelperText className={this.state.contactRequired}><span className="red">Please enter contact no</span></FormHelperText>
                             </FormControl>
+                            <br /><br />
+                            {this.state.registrationSuccess === true &&
+                                <FormControl>
+                                    <span>Registration Successful. Please Login!</span>
+                                </FormControl>
+                            }
                             <br /><br />
                             <Button variant="contained" color="primary" onClick={this.registerClickHandler}>REGISTER</Button>
                         </TabContainer>
