@@ -14,7 +14,11 @@ class Details extends Component {
     constructor() {
         super();
         this.state = {
-            movie: {},
+            movie: {
+                genres : [],
+                trailer_url: "",
+                artists : []
+            },
             starIcons: [
                 {
                     id: 1,
@@ -46,11 +50,19 @@ class Details extends Component {
     }
 
     componentWillMount() {
-        let currentState = this.state;
-        currentState.movie = moviesData.filter((mov) => {
-            return mov.id === this.props.match.params.id;
-        })[0];
-        this.setState(currentState);
+        let that = this;
+        /* Get Movie Detail */
+        let movieDetailData = null;
+        let xhrMovieDetail = new XMLHttpRequest();
+        xhrMovieDetail.addEventListener("readystatechange", function () {
+            if (this.readyState === 4) {
+                that.setState({ movie: JSON.parse(this.responseText) });
+            }
+        })
+
+        xhrMovieDetail.open("GET", this.props.baseUrl + "movies/" + this.props.match.params.id);
+        xhrMovieDetail.setRequestHeader("Cache-Control", "no-cache");
+        xhrMovieDetail.send(movieDetailData);
     }
 
     artistImageClickHandler = (wikiUrl) => {
@@ -121,7 +133,7 @@ class Details extends Component {
                         </div>
 
                         <div>
-                            <Typography><span className="bold">Duration: </span>{movie.duration}</Typography>
+                            <Typography><span className="bold">Duration: </span>{movie.duration + " mins"}</Typography>
                         </div>
 
                         <div>
