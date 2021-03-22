@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import './Home.css';
 import Header from '../../common/header/Header';
 import { withStyles } from '@material-ui/core/styles';
-import genres from '../../common/genres';
-import artists from '../../common/artists';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import GridListTileBar from '@material-ui/core/GridListTileBar';
@@ -56,10 +54,14 @@ class Home extends Component {
         super();
         this.state = {
             movieName: "",
-            upcomingMovies: [{}],
-            releasedMovies: [{}],
+            upcomingMovies: [],
+            releasedMovies: [],
+            genreList: [],
+            artistList: [],
             genres: [],
-            artists: []
+            artists: [],
+            releaseDateStart: "",
+            releaseDateEnd: ""
         }
     }
 
@@ -76,8 +78,47 @@ class Home extends Component {
         this.setState({ artists: e.target.value });
     }
 
+    releaseDateStartHandler = (e) => {
+        this.setState({ releaseDateStart: e.target.value });
+    }
+
+    releaseDateEndHandler = (e) => {
+        this.setState({ releaseDateEnd: e.target.value });
+    }
+
     applyClickHander = () => {
-        console.log('Apply pressed');
+        let queryString = "?status=RELEASED";
+
+        if (this.state.movieName !== "") {
+            queryString += "&title=" + this.state.movieName;
+        }
+        if (this.state.genres.length > 0) {
+            queryString += "&genre=" + this.state.genres.toString();
+        }
+        if (this.state.artists.length > 0) {
+            queryString += "&artists=" + this.state.artists.toString();
+        }
+        if (this.state.releaseDateStart !== "") {
+            queryString += "&start_date=" + this.state.releaseDateStart;
+        }
+        if (this.state.releaseDateEnd !== "") {
+            queryString += "&end_date=" + this.state.releaseDateEnd;
+        }
+
+        /* Get released movies */
+        let that = this;
+        let fliteredData = null;
+        let xhrFiltered = new XMLHttpRequest();
+        xhrFiltered.addEventListener("readystatechange", function () {
+            if (this.readyState === 4) {
+                that.setState({ releasedMovies: JSON.parse(this.responseText).movies });
+            }
+        })
+
+        xhrFiltered.open("GET", this.props.baseUrl + "movies" + encodeURI(queryString));
+        xhrFiltered.setRequestHeader("Cache-Control", "no-cache");
+        xhrFiltered.send(fliteredData);
+
     }
 
     movieClickHandler = (movieId) => {
@@ -111,6 +152,32 @@ class Home extends Component {
         xhrReleased.open("GET", this.props.baseUrl + "movies?status=RELEASED");
         xhrReleased.setRequestHeader("Cache-Control", "no-cache");
         xhrReleased.send(releasedData);
+
+        /* Get Genres */
+        let genreData = null;
+        let xhrGenre = new XMLHttpRequest();
+        xhrGenre.addEventListener("readystatechange", function () {
+            if (this.readyState === 4) {
+                that.setState({ genreList: JSON.parse(this.responseText).genres });
+            }
+        })
+
+        xhrGenre.open("GET", this.props.baseUrl + "genres");
+        xhrGenre.setRequestHeader("Cache-Control", "no-cache");
+        xhrGenre.send(genreData);
+
+        /* Get Artists */
+        let artistData = null;
+        let xhrArtist = new XMLHttpRequest();
+        xhrArtist.addEventListener("readystatechange", function () {
+            if (this.readyState === 4) {
+                that.setState({ artistList: JSON.parse(this.responseText).artists });
+            }
+        })
+
+        xhrArtist.open("GET", this.props.baseUrl + "artists");
+        xhrArtist.setRequestHeader("Cache-Control", "no-cache");
+        xhrArtist.send(artistData);
     }
 
     render() {
@@ -170,10 +237,10 @@ class Home extends Component {
                                         onChange={this.genreChangeHandler}>
 
                                         <MenuItem value="0">Select genre</MenuItem>
-                                        {genres.map(genre => (
-                                            <MenuItem key={genre.id} value={genre.name}>
-                                                <Checkbox checked={this.state.genres.indexOf(genre.name) > -1} />
-                                                <ListItemText primary={genre.name} />
+                                        {this.state.genreList.map(genre => (
+                                            <MenuItem key={"genre-" + genre.id} value={genre.genre}>
+                                                <Checkbox checked={this.state.genres.indexOf(genre.genre) > -1} />
+                                                <ListItemText primary={genre.genre} />
                                             </MenuItem>
                                         ))}
                                     </Select>
@@ -191,8 +258,8 @@ class Home extends Component {
                                         onChange={this.artistChangeHandler}>
 
                                         <MenuItem value="0">Select artist</MenuItem>
-                                        {artists.map(artist => (
-                                            <MenuItem key={artist.id} value={artist.first_name + " " + artist.last_name}>
+                                        {this.state.artistList.map(artist => (
+                                            <MenuItem key={"artist-" + artist.id} value={artist.first_name + " " + artist.last_name}>
                                                 <Checkbox checked={this.state.artists.indexOf(artist.first_name + " " + artist.last_name) > -1} />
                                                 <ListItemText primary={artist.first_name + " " + artist.last_name} />
                                             </MenuItem>
@@ -206,7 +273,8 @@ class Home extends Component {
                                         label="Release Date Start"
                                         defaultValue=""
                                         type="date"
-                                        InputLabelProps={{ shrink: true }} />
+                                        InputLabelProps={{ shrink: true }}
+                                        onChange={this.releaseDateStartHandler} />
                                 </FormControl>
 
                                 <FormControl className={classes.formControl}>
@@ -215,7 +283,8 @@ class Home extends Component {
                                         label="Release Date End"
                                         defaultValue=""
                                         type="date"
-                                        InputLabelProps={{ shrink: true }} />
+                                        InputLabelProps={{ shrink: true }}
+                                        onChange={this.releaseDateEndHandler} />
                                 </FormControl>
 
                                 <FormControl className={classes.formControl}>
