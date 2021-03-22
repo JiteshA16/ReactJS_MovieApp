@@ -185,7 +185,7 @@ class Header extends Component {
         this.setState({ contact: e.target.value });
     }
 
-    logoutHandler = () => { 
+    logoutHandler = () => {
         let that = this;
         let logoutData = null;
 
@@ -195,7 +195,7 @@ class Header extends Component {
                 console.log(this.responseText);
                 sessionStorage.removeItem("uuid");
                 sessionStorage.removeItem("access-token");
-                that.setState({loggedIn: false});
+                that.setState({ loggedIn: false });
             }
         })
 
@@ -222,13 +222,21 @@ class Header extends Component {
                     </div>
                 }
 
-                {this.props.showBookShowButton === "true"
+                {this.props.showBookShowButton === "true" && !this.state.loggedIn
+                    ? <div className="bookshow-button">
+                            <Button variant="contained" color="primary" onClick={this.openModalHandler}>BOOK SHOW</Button>
+                    </div>
+                    : ""
+                }
+
+                {this.props.showBookShowButton === "true" && this.state.loggedIn
                     ? <div className="bookshow-button">
                         <Link to={"/bookshow/" + this.props.id}>
                             <Button variant="contained" color="primary">BOOK SHOW</Button>
                         </Link>
                     </div>
-                    : ""}
+                    : ""
+                }
 
                 <Modal ariaHideApp={false} isOpen={this.state.modalIsOpen} contentLabel="Login" onRequestClose={this.closeModalHandler} style={customStyles}>
                     <Tabs className="tabs" value={this.state.value} onChange={this.tabChangeHandler}>
