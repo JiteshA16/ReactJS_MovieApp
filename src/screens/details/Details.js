@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import Header from '../../common/header/Header';
-import moviesData from '../../common/moviesData';
 import Typography from '@material-ui/core/Typography';
 import Youtube from 'react-youtube';
 import GridList from '@material-ui/core/GridList';
